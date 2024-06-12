@@ -119,7 +119,7 @@ log3 = 1.585 정도의 값이기 때문에 카라츠바 알고리즘이 O(n^2)�
 
 회사에 회의실이 하나밖에 없는데, n(<=100)개의 팀이 각각 회의하고 싶은 시간을 다음과 같이 제출했다고 하자. 두 팀이 회의실을 같이 쓸 수 없기 때문에 이 중 서로 겹치지 않는 회의들만을 골라내서 진행해야 한다. 최대 몇 개나 선택할 수 있을까?
 
-![https://blog.kakaocdn.net/dn/dNu1gp/btrifnLwPNl/R8veyh5WgwkwLFtDNs7wWK/img.png](https://github.com/AlmSmartDoctor/study-2024-06-advanced-algorithm/assets/55384167/cd203792-5255-4665-a47c-afc9b779806a)
+![https://blog.kakaocdn.net/dn/dNu1gp/btrifnLwPNl/R8veyh5WgwkwLFtDNs7wWK/img.png](https://github.com/AlmSmartDoctor/study-2024-06-advanced-algorithm/assets/55384167/a720a83d-ae53-4605-9674-45043d704bae)
 
 회의실 예약 - 활동 선택 문제
 
