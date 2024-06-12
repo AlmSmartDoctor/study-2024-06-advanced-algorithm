@@ -2,43 +2,42 @@
  * @param {number[]} nums
  * @return {number}
  */
-var maxSubArray = function (nums) {
-    return getSubs(nums)
+var maxSubArray = function(nums) {
+    return getSubs(nums, 0, nums.length - 1);
 };
 
-const getSubs = (subNums) => {
-    const middle = Math.floor(subNums.length / 2)
-    if (middle === 0) return subNums[0]
-    const leftNums = subNums.slice(
-        0, middle
-    )
-    const rightNums = subNums.slice(
-        subNums.length === 3 ? middle + 1 : middle, subNums.length
-    )
-    const middleSum = getMiddleSum(subNums, middle)
-
-    if (leftNums.length === 1 && rightNums.length === 1) {
-        return Math.max(leftNums[0], rightNums[0], middleSum)
-    } else {
-        return Math.max(getSubs(leftNums), getSubs(rightNums), middleSum)
+const getSubs = (subNums, left, right) => {
+    if (left === right) {
+        return subNums[left];
     }
-}
 
-const getMiddleSum = (subNums, middle) => {
-    let leftMaxSum = 0
-    let rightMaxSum = 0
+    const middle = Math.floor((left + right) / 2);
+    const leftSum = getSubs(subNums, left, middle);
+    const rightSum = getSubs(subNums, middle + 1, right);
+    const middleSum = getMiddleSum(subNums, left, middle, right);
+
+    return Math.max(leftSum, rightSum, middleSum);
+};
+
+const getMiddleSum = (subNums, left, middle, right) => {
+    let leftMaxSum = Number.NEGATIVE_INFINITY;
+    let rightMaxSum = Number.NEGATIVE_INFINITY;
 
     let sum = 0;
-    for (let i = middle - 1; i >= 0; i--) {
-        sum += subNums[i]
-        leftMaxSum = Math.max(sum, leftMaxSum)
+    for (let i = middle; i >= left; i--) {
+        sum += subNums[i];
+        if (sum > leftMaxSum) {
+            leftMaxSum = sum;
+        }
     }
 
     sum = 0;
-    for (let i = middle + 1; i <= subNums.length - 1; i++) {
-        sum += subNums[i]
-        rightMaxSum = Math.max(sum, rightMaxSum)
+    for (let i = middle + 1; i <= right; i++) {
+        sum += subNums[i];
+        if (sum > rightMaxSum) {
+            rightMaxSum = sum;
+        }
     }
 
-    return leftMaxSum + rightMaxSum + subNums[middle];
-}
+    return leftMaxSum + rightMaxSum;
+};
