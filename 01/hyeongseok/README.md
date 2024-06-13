@@ -4,6 +4,10 @@
 ### 215. Kth Largest Element in Array
 ![image](https://github.com/AlmSmartDoctor/study-2024-06-advanced-algorithm/assets/66310634/63df7dd8-5769-4a01-b008-e46223fb1362)
 
+### 218. The Skyline Problem
+![image](https://github.com/AlmSmartDoctor/study-2024-06-advanced-algorithm/assets/66310634/e36e557e-d3ee-495a-a643-53ee7ab70221)
+
+
 
 ### 122. Best Time to buy and sell stock 2
 ![image](https://github.com/AlmSmartDoctor/study-2024-06-advanced-algorithm/assets/66310634/b30a558f-7226-439d-ade2-3df05eced433)
