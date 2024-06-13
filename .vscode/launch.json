@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/junyeong/git-smartdoctor/study-2024-06-advanced-algorithm/01/jaeyoung",
+      "program": "/Users/junyeong/git-smartdoctor/study-2024-06-advanced-algorithm/01/jaeyoung/build/Debug/outDebug"
+    }
+  ]
+}
