@@ -1,6 +1,5 @@
 - [84. Largest Rectangle In Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/description/)
-![image](https://github.com/user-attachments/assets/fe5101dd-d669-4e81-a1d4-41486044d944)
-
+![image](https://github.com/user-attachments/assets/4f097468-3a0c-4ca8-ade0-1517db08f4ef)
 
 
 - [295. Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/description/)
