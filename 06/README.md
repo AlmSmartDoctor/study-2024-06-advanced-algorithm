@@ -8,7 +8,7 @@
 
 - 주어진 문자열 A의 substring으로 문자열 B가 존재하는가
 
-### Nogada 알고리즘
+### 브루트 포스 알고리즘
 
 - 처음부터 인덱스를 한 칸씩 이동하면서 해당 위치에서 시작하는 길이가 B와 같은 A의 substring이 B와 일치하는지 조사
 - 시간 복잡도: `O(|A| * |B|)`
@@ -130,11 +130,55 @@ vector<int> getPartialMatch(string a) {
 
 - KMP 알고리즘의 종합적 시간복잡도: `O(|A| + |B|)`
 
-#### 예제
+#### 예제: 팰린드롬 만들기
+
+- 팰린드롬: 앞에서 읽는거와 뒤에서부터 읽는게 동일한 문자열
+  - ex: noon
+- 목표: 주어진 문자열 S에 대해서 S뒤에 문자들을 추가로 붙여서 팰린드롬 생성
+- KMP 알고리즘을 통한 해결 방식:
+
+  - 문자열 S를 뒤집은 S'을 만들고, S의 접미사이자 S'의 접두사인 가장 긴 substring a 검색
+    - S = b + a, S' = a' + b'
+    - a = a'
+  - 해당 substring을 제외한 부분을 S 뒤에 붙이면 팰린드롬 A 생성
+    - A = b + a + b'
+    - A' = (b + a + b')' = b + a' + b' = b + a + b' = A
+  - 제일 긴 a를 찾아야 팰린드롬 A가 가장 작음
+
+  ```
+  # a의 접미사이자 b의 접두사인 문자열의 최대 길이 구하기
+  int maxOverlap(string a, string b) {
+  	int a_len = a.size();
+  	int b_len = b.size();
+  	vector<int> p = getPartialMatch(b);
+  	int start = 0;
+  	int match = 0;
+
+  	while (start < a_len) {
+  		if (match < b_len && a[start + match] == b[match]) {
+  			match += 1;
+  			# 위의 searchSubstring() 함수에서는 작은 문자열 전체가 일치하는 경우를 검색(b의 길이만큼 문자들이 일치)
+  			# 여기서는 a 문자열의 마지막까지 문자들이 일치하는걸 검색
+  			if (start + match == a_len) {
+  				return match;
+  			}
+  		}
+  		else {
+  			if (match == 0) start += 1;
+  			else {
+  				# KMP
+  				start += match - p[match - 1];
+  				match = p[match - 1];
+  			}
+  		}
+  	}
+  	return 0;
+  }
+  ```
 
 ### 접미사 배열(suffix array)
 
-- 문자열 S에 대해서 모든 가능한 접미사를 알파벳 순으로 나열한 표
+- 작은 S에 대해서 모든 가능한 접미사를 알파벳 순으로 나열한 표
 - 주어진 substring s가 S 안에 존재하는지 찾을때 활용
   - 모든 substring들은 접미사의 접두사
 - 정렬된 접미사 배열에서 이진탐색으로 s로 시작하는 접미사가 있는지 검색
@@ -144,6 +188,18 @@ vector<int> getPartialMatch(string a) {
   - 총 시간복잡도: `O(|s| * log(|S|))`
 
 #### 접미사 배열의 생성
+
+- 접미사 배열의 예시
+
+  - 문자열 `'redfsw'`
+    | 인덱스 | 접미사의 시작 인덱스 | 접미사 |
+    | -- | -- | -- |
+    | 0 | 2 | `'dfsw'` |
+    | 1 | 1 | `'edfsw'` |
+    | 2 | 3 | `'fsw'` |
+    | 3 | 0 | `'redfsw'` |
+    | 4 | 4 | `'sw'` |
+    | 5 | 5 | `'w'` |
 
 - 정렬을 어떻게 해야하는가
 - Nogada 알고리즘: 문자열 두 개를 각 문자들마다 일일이 비교
@@ -168,3 +224,30 @@ vector<int> getPartialMatch(string a) {
     - 한 단계의 시간 복잡도: O(NlogN)
     - 단계의 개수: i가 2배씩 증가하니까 O(logN)
     - `O(N(logN)^2)`
+
+#### 예제: 원형 문자열
+
+- 시작과 끝이 없는 원형으로 된 길이 n의 문자열 S가 주어질 때, 해당 문자열을 읽을 수 있는 n가지 방법 중 사전순으로 가장 먼저오는 문자열은 무엇인가
+  - 브루트 포스: n개의 가능한 시작점에 대해서 하나씩 문자열을 만들어서 조사
+    - 시간복잡도: O(n)이 걸리는 문자열 비교가 n번 있으므로 O(n^2)
+  - 접미사 배열 활용하기
+    - S를 두 번 이어붙여서 S'생성
+    - S를 읽을 수 있는 n가지 방법의 문자열은 모두 S'의 substring
+    - 길이가 n보다 긴 모든 S'의 접미사들은 각각 S를 읽을 수 있는 n가지 방법의 문자열 중 하나로 시작
+    - 해당 접미사들을 사전 순서로 정렬하면 답을 구할 수 있다
+    ```
+    int circularRead(string s) {
+    	string ss = s + s;
+    	# getSuffixArray(): 접미사 배열을 구하는 함수
+    	# 각 접미사의 시작 인덱스를 대응하는 접미사들을 사전 순서대로 정렬해서 반환
+    	vector<int> v = getSuffixArray(ss);
+    	for (int i = 0; i < v.size(); i++) {
+    		# 접미사 배열을 순회해서 길이가 s.size()보다 큰 첫 접미사 찾기
+    		if (v[i] <= s.size()) {
+    			해당 접미사의 위치에서 시작하는 주어진 문자열과 길이가 같은 substring 반환
+    			return ss.substr(v[i], s.size());
+    		}
+    	}
+    }
+    ```
+    - 시간복잡도: 접미사 배열을 계산하는 시간복잡도인 `O(N(logN)^2)`
