@@ -85,7 +85,7 @@ find - O(h), merge - O(h) (h < n)
 - find: O(lgn), union: O(lgn)
 
 ```cpp
-코드 25.1 트리를 이용한 (단순한) 상호 배타적 집합 자료 구조의 구현
+코드 25.2 최적화된 상호 배타적 집합의 구현
 struct OptimizedDisjointSet {
   vector<int> parent, rank;
   OptimizedDisjointSet(int n): parent(n), rank(n, 1) {
