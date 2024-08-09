@@ -73,7 +73,7 @@ find - O(h), merge - O(h) (h < n)
 
 ### 최적화
 
-랭크에 의한 합치기 최적화 (union-by-rank)
+***랭크에 의한 합치기 최적화 (union-by-rank)***
 
 > 발생 가능한 문제: 연산 순서에 따라 트리가 한쪽으로 기울어질 수 있음 (연결 리스트 생성) 
 - find: O(n), union: O(n)
@@ -111,32 +111,135 @@ struct OptimizedDisjointSet {
 };
 ```
 
-경로 압축 최적화 (path compression)
+***경로 압축 최적화 (path compression)***
 
 > find() 연산의 중복된 계산을 줄임
 - 노드 u의 parent를 찾으면 parent[u]에 저장.
 - 재귀적 구현으로 find(u)를 호출하면 경로 상의 모든 노드들에도 적용
 - 다음 find(u) 호출시 바로 루트를 찾을 수 있다
-
 - find - O(a(n)), union - O(a(n)): 현실적인 모든 입력에 대해 상수 시간
 
 ![image](https://github.com/user-attachments/assets/45159a46-ca21-4ca2-b34e-9236d625115a)
 
-
-
-
-
-
+<br/>
+<br/>
 
 ## 트라이
 
+문자열을 비교할 경우, 최악의 경우 문자열 길이에 비례하는 시간이 걸림
+
+문자열을 키로 갖는 N개의 원소를 가진 BST에서 원소를 찾으면, O(lgN)에 문자열의 최대 길이 M을 곱한 O(MlgN)이 됨
+
+트라이를 사용하면, 문자열 집합 내 원하는 원소를 찾는 작업을 O(M)만에 할 수 있다.
+
+<br>
+
+
 ![image](https://github.com/user-attachments/assets/b27707bd-cc85-473b-8154-efdce044fec0)
 
+문자열 집합 S = {"BE", "BET", "BUS", "TEA", "TEN"}를 저장하는 트라이
+
+- 문자열의 접두사들에 대응하는 노드들이 연결된 트리
+- 한 접두사의 맨 뒤에 글자를 붙여 다른 접두사를 얻을 수 있으면 부모 자식 관계로 연결
+- 노드를 연결하는 간선은 덧붙인 글자에 대응.
+- 루트 0, 깊이 1당 길이 1
+- 짙은 회색 노드는 종료 노드로, 해당 문자열이 집합에 포함됨
+
+<br/>
+
+### 구현
+
+루트에서 한 노드까지 내려가는 경로에서 만나는 글자를 모으면, 해당 노드의 접두사를 얻을 수 있음
+
+각 노드에 대응하는 문자열을 저장할 필요가 없다!
+
+트라이의 노드 객체 구성
+- 자손 노드들을 가리키는 포인터 목록 (고정 길이 배열로 구현. 알파벳이면 26)
+- 종료 노드인지 나타내는 불린 값 변수
+
+메모리를 엄청나게 낭비하지만, 다음 노드를 찾는 과정에서 어떤 탐색도 필요하지 않다!
+
+
+```cpp
+코드 26.1 트라이의 노드를 표현하는 객체의 선언
+const int ALPHABETS = 26;
+int toNumber(char ch) { return ch - 'A'}
+// 트라이의 한 노드를 나타내는 객체
+struct TrieNode {
+  TrieNode* children[ALPHABETS];
+  bool terminal;
+  TrieNode() : terminal(false) {
+    memset(children, 0, sizeof(children));
+  }
+
+  // 이 노드를 루트로 하는 트라이에 문자열 key를 추가
+  void insert(const char* key) {
+    // 문자열이 끝나면 terminal만 참으로 바꾸고 종료
+    if(*key == 0) terminal = true;
+    else {
+      int next = toNumber(*key);
+      // 해당 자식 노드가 없다면 생성
+      if(children[next] == NULL)
+        children[next] == new TrieNode();
+      // 해당 자식 노드를 재귀호출
+      children[next] -> insert(key + 1);
+    }
+  }
+
+  // 이 노드를 루트로 하는 트라이에 문자열 key와 대응되는 노드를 찾음
+  // 없으면 NULL을 반환
+  TrieNode* find(const char* key) {
+    if(*key == 0) return this;
+    int next = toNumber(*key);
+    if(children[next] == NULL) return NULL;
+    return children[next] -> find(key + 1)
+  }
+}
+```
+
+> find는 찾아낸 문자열이 대응되는 노드가 종료 노드인지 확인하지 않음. 
+- 해당 문자열이 진짜 존재하는지 알려면 반환된 terminal이 true인지 확인해야함.
+- 종료 노드가 아닌 노드를 반환할 때 장점은, 문자열의 첫 일부만 가지고도 이 문자열로 시작하는 키가 있는지 확인할 수 있음
+- 문자열이 입력되는 중간에 자동 완성하는 프로그램을 구현할 때 아주 유용
+
+> 시간복잡도: find, insert 모두 O(M)
+- 문자열의 길이만큼 재귀 호출을 수행
+- 트라이에 포함된 다른 문자열의 개수와는 상관이 없음
+- 빠른 속도가 필요한 검색 엔진이나 기타 문자열 처리 프로그램에서 자주 사용
+
+
+문제는 필요 공간이 너무 큼. 
+- 알파벳을 저장하면 각 노드는 26개 포인터 저장
+- 포인터 크기가 8바이트인 64비트 아키텍처면, 노드 하나 표현에 200여 바이트
+- 문자열들이 접두사를 공유하지 않는 최악의 경우, 문자열 길이의 합이 1백만이면 200MB 필요.
+- 따라서 트라이는 다루는 문자열의 개수가 그렇게 많지 않을 때 사용됨
+
+<br/>
+
+### 접미사 트리
+여러 문자열 대신 한 문자열 S의 모든 접미사를 넣을 수 있음. 이를 접미사 트라이라고 함(suffix trie)
 
 ![image](https://github.com/user-attachments/assets/c15f9a80-1ed4-4c9b-9259-35c1b5e3e0f3)
 
+- 문자열의 모든 부분 문자열은 어떤 접미사의 접두사이므로, 접미사 트라이는 한 문자열의 모든 부분 문자열을 저장함.
+- 접미사 트라이에서의 검색을 이용하면 어떤 부분 문자열도 빠르게 찾아낼 수 있음.
+- 너무 많은 메모리 사용. 원 문자열이 길이가 1000만 되도 접미사 길이의 합은 1000*999/2 ~ 50만. 50만개의 노드를 갖는 트라이는 100MB. 1kB -> 100MB, 십만배
+
+이를 해결하는게 접미사 트리
 
 ![image](https://github.com/user-attachments/assets/e19e652e-d5f1-4ba1-a92e-49eeea07b957)
+- 접미사 트라이의 많은 부분이 분기 없이 일자로 구성되는 것에 착안
+- 각 간선이 문자열의 한 글자가 아니라 여러 글자에 대응시켜, 긴 일자 경로를 압축함
+- 전체 노드 개수는 최대 O(N)
+
+그러나 접미사 트리를 만드는 Cost가 큼
+- 단순한 알고리즘은 O(N^2), 효율적인 알고리즘은 너무 복잡
+- 유용성에 비해 굉장히 제한된 경우에만 사용. 많은 경우 20장의 접미사 배열을 대신 사용.
+
+
+<br/>
+
+### 트라이를 이용한 다중 문자열 검색
 
 
 ![image](https://github.com/user-attachments/assets/c517c5d6-99bc-444c-aa1a-c6f00f8f57a6)
