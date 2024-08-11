@@ -1,5 +1,7 @@
 # Ch 25. 상호 배타적 집합 & Ch 26. 트라이 - 과제
 
+**하드 반드시 1개 이상**
+
 상호 배타적 집합
 **필수 1개**
 - [684. Redundant Connection](https://leetcode.com/problems/redundant-connection/description/)
