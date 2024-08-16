@@ -104,7 +104,7 @@ vector<int> topologicalSort() {
 dfs(u)가 먼저 종료. dfs(u)는 간선 (u, v)를 검사했을 것.
 
 1. visited[v]가 거짓이었다면, dfs(u)는 dfs(v)를 호출 -> dfs(v)가 먼저 종료
-2. visited[v]가 참이었다면, dfs(v)가 이미 호출 -> dfs(v) 실행 중 -> dfs(v)에서 dfs(u)를 호출 -> 간선 (v, u)가 존재 -> 사이클 존재
+2. visited[v]가 참이었다면, dfs(v)가 이미 호출 -> dfs(v) 실행 중 -> dfs(v)에서 dfs(u)를 호출 -> v에서 u로 가는 경로 존재재 -> 사이클 존재
 
 ## 간선 분류
 
