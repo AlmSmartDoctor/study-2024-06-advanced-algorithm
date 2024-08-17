@@ -12,7 +12,7 @@
 > 2. 방문하지 않은 정점으로 향하는 간선이 있다면 그 간선을 따라감
 > 3. 막힌 정점에 도달하면 따라온 간선을 따라 뒤로 돌아감
 
-![alt text](image.png)
+![alt text](images/dfs.png)
 
 <br/>
 
@@ -64,7 +64,7 @@ void dfsAll() {
 
 > **의존성 그래프**: 정점 간의 의존 관계를 간선으로 표현한 방항 그래프
 
-![alt text](image-1.png)
+![alt text](images/dependence.png)
 
 > **위상 정렬**: 모든 간선이 한 방향으로 향하도록 DAG의 정점을 일렬로 배열
 
@@ -108,7 +108,7 @@ dfs(u)가 먼저 종료. dfs(u)는 간선 (u, v)를 검사했을 것.
 
 ## 간선 분류
 
-![alt text](image-2.png)
+![alt text](images/classify.png)
 
 그래프의 DFS 스패닝 트리를 생성하고 나면 그래프의 모든 간선을 네 가지 형태로 분류 가능
 
@@ -168,7 +168,7 @@ void dfs2(int here) {
 
 > 방향 그래프 상에서 두 정점 u와 v에 대해 양 방향으로 가는 경로가 모두 있을 때 두 정점은 같은 SCC
 
-![alt text](image-4.png)
+![alt text](images/scc.png)
 
 타잔의 알고리즘: 그래프를 SCC로 분리하는 알고리즘
 
@@ -248,7 +248,7 @@ vector<int> tarjanSCC() {
 > 2. 처음 발견한 정점이 있다면 그 정점을 방문 예정이라고 기록
 > 3. 인접한 정점을 모두 검사하고 나면, 기록해둔 정점을 순서대로 방문
 
-![alt text](image-3.png)
+![alt text](images/bfs.png)
 
 <br>
 
@@ -337,7 +337,7 @@ vector<int> bfs2(int start, vector<int>& distance, vector<int>& parent) {
 
 예제: 15-퍼즐
 
-![alt text](image-5.png)
+![alt text](images/puzzle.png)
 
 ### 너비 우선 탐색
 
