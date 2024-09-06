@@ -276,4 +276,4 @@ void Graph::primMST()
 1. 각 정점이 한 번씩 우선순위 큐에서 꺼내짐 = O(VlogV)
 2. 각 간선이 최대 한 번씩 우선순위 큐에 삽입 = O(ElogV)
 
-우선순위 큐 프림 알고리즘 시간 복잡도 = O((V+E)logV) = O(VlogV)
+우선순위 큐 프림 알고리즘 시간 복잡도 = O((V+E)logV) = O(ElogV)
