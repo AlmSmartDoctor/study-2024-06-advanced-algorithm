@@ -1,4 +1,4 @@
-https://leetcode.com/problems/min-cost-to-connect-all-points/
+https://leetcode.com/problems/min-cost-to-connect-all-points/ </br>
 <img width="500" src="https://github.com/user-attachments/assets/90d0c106-d077-4dd9-a83f-d970c285b3b3">
 
 ```python
@@ -39,7 +39,7 @@ class Solution:
 ```
 </br>
 
-https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/
+https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/ </br>
 <img width="500" src="https://github.com/user-attachments/assets/b5c4be87-d96b-4e0e-a2e0-373ea1b0a647">
 
 ```python
