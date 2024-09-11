@@ -1,122 +1,123 @@
-const input = require("fs")
+import * as fs from "fs";
+
+const input = fs
   .readFileSync(process.platform === "linux" ? "/dev/stdin" : "./input.txt")
   .toString()
   .trim()
   .split("\n")
-  .map((el) => el.split(" ").map(Number));
+  .map((line) => line.split(" ").map(Number));
 
-const [n, m] = input[0];
-const board = input.slice(1);
+const [rows, cols] = input[0];
+const grid = input.slice(1);
 
-let visit: boolean[][] = [];
-const move: [number, number][] = [
+let visited: boolean[][] = [];
+const directions: [number, number][] = [
   [0, 1],
   [1, 0],
   [0, -1],
   [-1, 0],
 ];
-const land = new Map<string, number>();
-let landArr: [number, number, number][] = [];
-let landNum = 0;
+const islandMap = new Map<string, number>();
+let islandDetails: [number, number, number][] = [];
+let islandCount = 0;
 
-const bfs = (i: number, j: number) => {
-  const q: [number, number][] = [[i, j]];
-  visit[i][j] = true;
-  land.set(`${i},${j}`, landNum);
-  landArr.push([i, j, landNum]);
+const bfs = (startRow: number, startCol: number) => {
+  const queue: [number, number][] = [[startRow, startCol]];
+  visited[startRow][startCol] = true;
+  islandMap.set(`${startRow},${startCol}`, islandCount);
+  islandDetails.push([startRow, startCol, islandCount]);
 
-  while (q.length > 0) {
-    const [x, y] = q.shift()!;
-    for (const [a, b] of move) {
-      const dx = x + a,
-        dy = y + b;
+  while (queue.length > 0) {
+    const [currentRow, currentCol] = queue.shift()!;
+    for (const [rowOffset, colOffset] of directions) {
+      const newRow = currentRow + rowOffset;
+      const newCol = currentCol + colOffset;
       if (
-        dx >= 0 &&
-        dx < n &&
-        dy >= 0 &&
-        dy < m &&
-        !visit[dx][dy] &&
-        board[dx][dy] === 1
+        newRow >= 0 &&
+        newRow < rows &&
+        newCol >= 0 &&
+        newCol < cols &&
+        !visited[newRow][newCol] &&
+        grid[newRow][newCol] === 1
       ) {
-        q.push([dx, dy]);
-        visit[dx][dy] = true;
-        land.set(`${dx},${dy}`, landNum);
-        landArr.push([dx, dy, landNum]);
+        queue.push([newRow, newCol]);
+        visited[newRow][newCol] = true;
+        islandMap.set(`${newRow},${newCol}`, islandCount);
+        islandDetails.push([newRow, newCol, islandCount]);
       }
     }
   }
 };
 
-const solve = async () => {
-  visit = Array.from({ length: n }, () => Array(m).fill(false));
+const solve = () => {
+  visited = Array.from({ length: rows }, () => Array(cols).fill(false));
 
-  // BFS
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < m; j++) {
-      if (board[i][j] === 1 && !visit[i][j]) {
-        bfs(i, j);
-        landNum++;
+  // BFS to identify islands
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c] === 1 && !visited[r][c]) {
+        bfs(r, c);
+        islandCount++;
       }
     }
   }
 
-  // make edges
-  const edges: [number, number, number][] = [];
-  for (const [x, y, curLand] of landArr) {
-    for (const [a, b] of move) {
-      let dist = 0;
-      let dx = x + a,
-        dy = y + b;
-      while (dx >= 0 && dx < n && dy >= 0 && dy < m) {
-        const toLand = land.get(`${dx},${dy}`);
-        if (curLand === toLand) break;
-        if (toLand === undefined) {
-          dx += a;
-          dy += b;
-          dist++;
+  // Create edges between islands
+  const edgeList: [number, number, number][] = [];
+  for (const [row, col, currentIsland] of islandDetails) {
+    for (const [rowOffset, colOffset] of directions) {
+      let distance = 0;
+      let newRow = row + rowOffset;
+      let newCol = col + colOffset;
+      while (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+        const neighboringIsland = islandMap.get(`${newRow},${newCol}`);
+        if (currentIsland === neighboringIsland) break;
+        if (neighboringIsland === undefined) {
+          newRow += rowOffset;
+          newCol += colOffset;
+          distance++;
           continue;
         }
-        if (dist >= 2) {
-          edges.push([dist, curLand, toLand]);
+        if (distance >= 2) {
+          edgeList.push([distance, currentIsland, neighboringIsland]);
         }
         break;
       }
     }
   }
-  edges.sort((a, b) => b[0] - a[0]);
+  edgeList.sort((a, b) => b[0] - a[0]);
 
-  // Kruskal
-  const parents = Array.from({ length: landNum }, (_, i) => i);
+  // Kruskal's algorithm
+  const parent = Array.from({ length: islandCount }, (_, i) => i);
 
-  const find = (k: number): number => {
-    if (k !== parents[k]) {
-      parents[k] = find(parents[k]);
+  const findParent = (node: number): number => {
+    if (node !== parent[node]) {
+      parent[node] = findParent(parent[node]);
     }
-    return parents[k];
+    return parent[node];
   };
 
   const union = (x: number, y: number) => {
-    const rootX = find(x);
-    const rootY = find(y);
-    parents[rootY] = rootX;
+    const rootX = findParent(x);
+    const rootY = findParent(y);
+    parent[rootY] = rootX;
   };
 
-  let ans = 0;
-  let cnt = landNum - 1;
-  while (cnt > 0) {
-    if (edges.length === 0) {
+  let totalCost = 0;
+  let remainingIslands = islandCount - 1;
+  while (remainingIslands > 0) {
+    if (edgeList.length === 0) {
       console.log(-1);
-      process.exit();
+      return; // Exiting the function gracefully
     }
-    const [w, a, b] = edges.pop()!;
-    if (find(a) !== find(b)) {
-      union(a, b);
-      ans += w;
-      cnt--;
+    const [weight, islandA, islandB] = edgeList.pop()!;
+    if (findParent(islandA) !== findParent(islandB)) {
+      union(islandA, islandB);
+      totalCost += weight;
+      remainingIslands--;
     }
   }
-  console.log(ans);
-  process.exit();
+  console.log(totalCost);
 };
 
 solve();
