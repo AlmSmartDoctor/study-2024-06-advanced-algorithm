@@ -105,16 +105,47 @@ def fordFulkerson(graph, s, t, n):
 </br>
 </br>
 </br>
-</br>
-2. BFS의 경우 </br> 
+
+2. BFS의 경우 </br> </br>
 ![alt text](images/image2.png)
-</br>
 </br>
 </br>
 </br>
 
 ## Bipartite Matching </br>
-![alt text](images/image4.png) </br>
-![alt text](images/image5.png) </br>
-![alt text](images/image6.png) </br>
+![alt text](images/image4.png) </br> </br>
+![alt text](images/image5.png) </br> </br>
+![alt text](images/image6.png) </br> </br>
 ![alt text](images/image7.png)
+
+</br>
+</br>
+
+좀 더 쉬운 방법
+```python
+# matched_Y : Y 그룹의 노드와 매칭된 X 노드의 번호
+# matched_X : X 그룹의 노드와 매칭된 Y 노드의 번호
+def dfs(x):
+    visited[x] = True
+    for y in graph[x]:
+        # y 노드와 매칭된 노드가 없는 경우, x 노드와 매칭
+        if matched_Y[y] == 0:
+            matched_Y[y] = x
+            matched_X[x] = y
+            return True
+        # y 노드가 이미 매칭이 되어있는 경우, y 노드와 매칭되어 있는 노드가 다른 노드와 매칭이 가능한지 확인
+        elif not visited[matched_Y[y]] and dfs(matched_Y[y]):
+            # 다른 노드와 매칭이 가능한 경우, y 노드와 x 노드를 매칭
+            matched_Y[y] = x
+            matched_X[x] = y
+            return True
+    return False
+
+
+cnt = 0
+for i in range(1, n+1):
+    if matched_X[i] == 0:
+        visited = [False] * (n+1)
+        if dfs(i):
+            cnt += 1
+```
